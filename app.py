@@ -9,7 +9,7 @@ import win32gui
 
 # Window creation
 style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
-window = pyglet.window.Window(width=960, height=540, resizable=False, style=style)
+window = pyglet.window.Window(width=960, height=540, style=style, resizable=False)
 #window.set_size(640, 480)
 window.set_size(1920, 1080)
 
@@ -18,7 +18,7 @@ window.set_size(1920, 1080)
 progman = win32gui.FindWindow("Progman", None)
 result = win32gui.SendMessageTimeout(progman, 0x052c, 0, 0, 0x0, 1000)
 
-workerw = 0;
+workerw = 0
 def _enum_windows(tophandle, topparamhandle):
   p = win32gui.FindWindowEx(tophandle, 0, "SHELLDLL_DefView", None)
   if p != 0:
@@ -33,15 +33,15 @@ def _enum_windows(tophandle, topparamhandle):
 win32gui.EnumWindows(_enum_windows, 0) # sets window behind icons
 
 # Shader creation
-vert = './shader/metaball.glsl'
-frag = './shader/frag.glsl'
+vert = './shader/vert.glsl'
+frag = './shader/frag/5.glsl'
 shader = pyshaders.from_files_names(vert, frag)
 shader.use()
 
 
 def _update_shader_time(dt):
-  #shader.uniforms.vertexCount = vert_count
-  shader.uniforms.time += dt
+  if 'time' in shader.uniforms:
+    shader.uniforms.time += dt*0.5
 
 pyglet.clock.schedule_interval(_update_shader_time, 0.0016)
 
@@ -53,17 +53,21 @@ vertex_list = pyglet.graphics.vertex_list(vert_count, 'v3f', 'c4B', 't2f', 'n3f'
 if 'vertexCount' in shader.uniforms:
   shader.uniforms.vertexCount = vert_count
 
-
+tris = pyglet.graphics.vertex_list(6,
+  ('v2f', (-1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1))
+)
 
 @window.event
 def on_draw(): 
-  gl.glEnable(gl.GL_DEPTH_TEST)
-  gl.glEnable(gl.GL_BLEND)
-  gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
+  #gl.glEnable(gl.GL_DEPTH_TEST)
+  #gl.glEnable(gl.GL_BLEND)
+  #gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
   gl.glClearColor(0, 0, 0, 0)
   gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+  #vertex_list.draw(vert_mode)
 
-  vertex_list.draw(vert_mode)
+  #window.clear()
+  tris.draw(GL_TRIANGLES)
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
@@ -76,7 +80,8 @@ def on_mouse_motion(x, y, dx, dy):
 
 @window.event
 def on_key_press(symbol, modifiers):
-  print(shader.uniforms.time)
+  if 'time' in shader.uniforms:
+    print(shader.uniforms.time)
   if symbol == key.Q:
     pyglet.app.exit()
 
