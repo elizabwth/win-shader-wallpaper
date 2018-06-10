@@ -13,7 +13,7 @@ class ShaderWindow(pyglet.window.Window):
         self.shader_program = pyshaders.from_files_names(vert, frag)
         self.shader_program.use()
 
-        tris = (-1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1)
+        tris = (-1, -1, -1, 1, 2, -1, 1, 1, -1, 1, 1, -1)
         self.polys = pyglet.graphics.vertex_list(6, ('v2f', tris))
 
         self.timescale = 1
@@ -26,14 +26,18 @@ class ShaderWindow(pyglet.window.Window):
 
     def change_shader(self, shader_file):
         vert = './shader/vert.glsl'
+        # 
+        self.shader_program.use()
+        self.shader_program.clear()
         del self.shader_program
-        #self.shader_program.use()
-        #self.shader_program.clear()
         self.shader_program = pyshaders.from_files_names(vert, shader_file)
         self.shader_program.use()
 
+        if 'resolution' in self.shader_program.uniforms:
+            self.shader_program.uniforms.resolution = (self.width, self.height)
+
     def on_draw(self):
-        gl.glEnable(gl.GL_DEPTH_TEST)
+        # gl.glEnable(gl.GL_DEPTH_TEST)
         # gl.glEnable(gl.GL_BLEND)
         gl.glClearColor(0, 0, 0, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
@@ -45,6 +49,10 @@ class ShaderWindow(pyglet.window.Window):
     def on_resize(self, width, height):
         if 'resolution' in self.shader_program.uniforms:
             self.shader_program.uniforms.resolution = (width, height)
+
+        super(ShaderWindow, self).on_resize(width, height)
+
+        print(width, height)
 
 
 
