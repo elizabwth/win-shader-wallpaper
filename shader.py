@@ -1,5 +1,6 @@
 import pyglet
 import pyshaders
+import win32gui
 from pyglet.gl import *
 
 
@@ -23,6 +24,23 @@ class ShaderWindow(pyglet.window.Window):
                 self.shader_program.uniforms.time += dt * self.timescale
 
         pyglet.clock.schedule_interval(_update_shader_time, 1 / 60)
+
+        # progman = win32gui.FindWindow("Progman", None)
+        # result = win32gui.SendMessageTimeout(progman, 0x052c, 0, 0, 0x0, 1000)
+        workerw = 0
+
+        def _enum_windows(tophandle, topparamhandle):
+            p = win32gui.FindWindowEx(tophandle, 0, "SHELLDLL_DefView", None)
+            if p != 0:
+                workerw = win32gui.FindWindowEx(0, tophandle, "WorkerW", None)
+
+                pyglet_hwnd = self._hwnd
+                # pyglet_hdc = win32gui.GetWindowDC(pyglet_hwnd)
+                win32gui.SetParent(pyglet_hwnd, workerw)
+
+            return True
+
+        win32gui.EnumWindows(_enum_windows, 0)  # sets window behind icons
 
     def change_shader(self, shader_file):
         vert = './shader/vert.glsl'

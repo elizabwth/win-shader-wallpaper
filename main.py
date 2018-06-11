@@ -18,8 +18,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
 
-
-        self.sw = shader.ShaderWindow(width=960, height=540, resizable=True)
+        style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
+        self.sw = shader.ShaderWindow(width=1920, height=1080,
+                                      style=style, resizable=True)
         self.timer = QTimer()
         self.timer.timeout.connect(self.pyglet_loop)
         self.timer.start(0)
@@ -27,7 +28,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.show()
 
     def update_timescale(self, val):
-        new_val = val*0.01
+        new_val = val * 0.01
         self.sw.timescale = new_val
         print(val)
 
@@ -39,6 +40,9 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def pyglet_loop(self):
         pyglet.app.run()
+
+    def closeEvent(self, event):
+        pyglet.app.exit()
 
 
 if __name__ == '__main__':
