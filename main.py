@@ -17,10 +17,11 @@ class MyWindow(QtWidgets.QMainWindow):
         self.shaderComboBox.addItems(self.list_of_shaders)
         self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
+        self.updateRateSlider.valueChanged.connect(self.update_update_rate)
 
-        style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
-        self.sw = shader.ShaderWindow(width=1920, height=1080,
-                                      style=style, resizable=True)
+        # style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
+        self.sw = shader.ShaderWindow(width=1920, height=1080, resizable=True)
+        self.sw.set_location(0, 0)
         self.timer = QTimer()
         self.timer.timeout.connect(self.pyglet_loop)
         self.timer.start(0)
@@ -30,7 +31,10 @@ class MyWindow(QtWidgets.QMainWindow):
     def update_timescale(self, val):
         new_val = val * 0.01
         self.sw.timescale = new_val
-        print(val)
+
+    def update_update_rate(self, val):
+        self.sw.change_update_rate(val)
+        self.updateRateLabel.setText(str(val)+" FPS")
 
     def change_shader(self, index):
         shader = self.list_of_shaders[index]

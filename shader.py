@@ -18,12 +18,10 @@ class ShaderWindow(pyglet.window.Window):
         self.polys = pyglet.graphics.vertex_list(6, ('v2f', tris))
 
         self.timescale = 1
+        self.update_rate = 120
 
-        def _update_shader_time(dt):
-            if 'time' in self.shader_program.uniforms:
-                self.shader_program.uniforms.time += dt * self.timescale
-
-        pyglet.clock.schedule_interval(_update_shader_time, 1 / 60)
+        pyglet.clock.schedule_interval(self._update_shader_time,
+                                       1 / self.update_rate)
 
         # progman = win32gui.FindWindow("Progman", None)
         # result = win32gui.SendMessageTimeout(progman, 0x052c, 0, 0, 0x0, 1000)
@@ -42,9 +40,18 @@ class ShaderWindow(pyglet.window.Window):
 
         win32gui.EnumWindows(_enum_windows, 0)  # sets window behind icons
 
+    def _update_shader_time(self, dt):
+        if 'time' in self.shader_program.uniforms:
+            self.shader_program.uniforms.time += dt * self.timescale
+
+    def change_update_rate(self, val):
+        pyglet.clock.unschedule(self._update_shader_time)
+        self.update_rate = val
+        pyglet.clock.schedule_interval(self._update_shader_time, 1 / self.update_rate)
+
     def change_shader(self, shader_file):
         vert = './shader/vert.glsl'
-        # 
+
         self.shader_program.use()
         self.shader_program.clear()
         del self.shader_program
