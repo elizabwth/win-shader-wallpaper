@@ -58,8 +58,11 @@ class ShaderWindow(pyglet.window.Window):
         self.shader_program = pyshaders.from_files_names(vert, shader_file)
         self.shader_program.use()
 
+        self.change_res(self.width, self.height)
+
+    def change_res(self, w, h):
         if 'resolution' in self.shader_program.uniforms:
-            self.shader_program.uniforms.resolution = (self.width, self.height)
+            self.shader_program.uniforms.resolution = (w, h)
 
     def on_draw(self):
         # gl.glEnable(gl.GL_DEPTH_TEST)
@@ -73,7 +76,7 @@ class ShaderWindow(pyglet.window.Window):
 
     def on_resize(self, width, height):
         if 'resolution' in self.shader_program.uniforms:
-            self.shader_program.uniforms.resolution = (width, height)
+            self.change_res(width, height)
 
         super(ShaderWindow, self).on_resize(width, height)
 
