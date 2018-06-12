@@ -10,7 +10,7 @@ class ShaderWindow(pyglet.window.Window):
         print("hwnd", self._hwnd)
 
         vert = './shader/vert.glsl'
-        frag = './shader/frag/trees.glsl'
+        frag = './shader/frag/paint.glsl'
         self.shader_program = pyshaders.from_files_names(vert, frag)
         self.shader_program.use()
 
@@ -23,8 +23,9 @@ class ShaderWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self._update_shader_time,
                                        1 / self.update_rate)
 
-        # progman = win32gui.FindWindow("Progman", None)
-        # result = win32gui.SendMessageTimeout(progman, 0x052c, 0, 0, 0x0, 1000)
+    def set_behind_icons(self):
+        progman = win32gui.FindWindow("Progman", None)
+        result = win32gui.SendMessageTimeout(progman, 0x052c, 0, 0, 0x0, 1000)
         workerw = 0
 
         def _enum_windows(tophandle, topparamhandle):

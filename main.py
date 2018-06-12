@@ -19,6 +19,8 @@ class MyWindow(QtWidgets.QMainWindow):
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
         self.updateRateSlider.valueChanged.connect(self.update_update_rate)
 
+        self.forceButton.clicked.connect(self.force_clicked)
+
         # style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
         self.sw = shader.ShaderWindow(width=1920, height=1080, resizable=True)
         self.sw.set_location(0, 0)
@@ -27,6 +29,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.timer.start(0)
 
         self.show()
+
+    def force_clicked(self):
+        self.sw.set_behind_icons()
 
     def update_timescale(self, val):
         new_val = val * 0.01
