@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>203</height>
+    <width>272</width>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,13 +18,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>80</y>
+      <y>130</y>
       <width>161</width>
       <height>22</height>
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>-100</number>
     </property>
     <property name="maximum">
      <number>100</number>
@@ -36,7 +36,7 @@
      <number>10</number>
     </property>
     <property name="value">
-     <number>50</number>
+     <number>100</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -62,7 +62,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>110</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -88,13 +88,13 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>80</y>
+      <y>130</y>
       <width>81</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>--</string>
     </property>
    </widget>
    <widget class="QLabel" name="currentShaderLabel">
@@ -102,19 +102,19 @@
      <rect>
       <x>180</x>
       <y>30</y>
-      <width>91</width>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>--</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>150</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -127,7 +127,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>170</y>
       <width>161</width>
       <height>22</height>
      </rect>
@@ -161,26 +161,74 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>120</y>
+      <y>170</y>
       <width>81</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>--</string>
     </property>
    </widget>
    <widget class="QPushButton" name="forceButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
+      <y>200</y>
       <width>161</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
      <string>Force Desktop Parent</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="resWidth">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9999999</number>
+    </property>
+    <property name="value">
+     <number>1920</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="resHeight">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>60</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>9999999</number>
+    </property>
+    <property name="value">
+     <number>1080</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="setResButton">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>60</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply</string>
     </property>
    </widget>
   </widget>

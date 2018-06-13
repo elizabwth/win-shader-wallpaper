@@ -18,6 +18,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
         self.updateRateSlider.valueChanged.connect(self.update_update_rate)
+        self.setResButton.clicked.connect(self.update_resolution)
 
         self.forceButton.clicked.connect(self.force_clicked)
 
@@ -30,12 +31,16 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.show()
 
+    def update_resolution(self):
+        self.sw.set_size(self.resWidth.value(), self.resHeight.value())
+
     def force_clicked(self):
         self.sw.set_behind_icons()
 
     def update_timescale(self, val):
         new_val = val * 0.01
         self.sw.timescale = new_val
+        self.timescaleLabel.setText(str(new_val))
 
     def update_update_rate(self, val):
         self.sw.change_update_rate(val)
