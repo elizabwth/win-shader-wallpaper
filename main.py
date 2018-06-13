@@ -14,7 +14,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.list_of_shaders = glob.glob('.\\shader\\frag\\*.glsl')
 
-        self.shaderComboBox.addItems(self.list_of_shaders)
+        self.shaderComboBox.addItems([s.split('\\')[-1] for s in self.list_of_shaders])
         self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
         self.updateRateSlider.valueChanged.connect(self.update_update_rate)
@@ -23,7 +23,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.forceButton.clicked.connect(self.force_clicked)
 
         # style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
-        self.sw = shader.ShaderWindow(width=1920, height=1080, resizable=True)
+        self.sw = shader.ShaderWindow(width=300, height=1080, resizable=True)
         self.sw.set_location(0, 0)
         self.timer = QTimer()
         self.timer.timeout.connect(self.pyglet_loop)

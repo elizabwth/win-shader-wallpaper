@@ -1,6 +1,7 @@
 import pyglet
 import pyshaders
 import win32gui
+import win32api
 from pyglet.gl import *
 
 
@@ -10,7 +11,7 @@ class ShaderWindow(pyglet.window.Window):
         print("hwnd", self._hwnd)
 
         vert = './shader/vert.glsl'
-        frag = './shader/frag/paint.glsl'
+        frag = './shader/frag/mouse2.glsl'
         self.shader_program = pyshaders.from_files_names(vert, frag)
         self.shader_program.use()
 
@@ -44,6 +45,14 @@ class ShaderWindow(pyglet.window.Window):
     def _update_shader_time(self, dt):
         if 'time' in self.shader_program.uniforms:
             self.shader_program.uniforms.time += dt * self.timescale
+
+        # mouse
+        if 'mouse' in self.shader_program.uniforms:
+            pos = win32api.GetCursorPos()
+
+            nx = (pos[0]) / (self.width)
+            ny = (self.height - pos[1]) / (self.height)
+            self.shader_program.uniforms.mouse = (nx, ny)
 
     def change_update_rate(self, val):
         pyglet.clock.unschedule(self._update_shader_time)
