@@ -4,6 +4,19 @@ import win32gui
 import win32api
 from pyglet.gl import *
 
+import json
+
+vert_shader = '''
+#version 330 core
+uniform float time;
+attribute vec3 position;
+
+void main()
+{
+  gl_Position = vec4(position, 1);
+}
+'''
+
 
 class ShaderWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
@@ -18,6 +31,7 @@ class ShaderWindow(pyglet.window.Window):
         tris = (-1, -1, -1, 1, 2, -1, 1, 1, -1, 1, 1, -1)
         self.polys = pyglet.graphics.vertex_list(6, ('v2f', tris))
 
+        self.update_mouse_pos = False
         self.timescale = 1
         self.update_rate = 120
 
@@ -43,16 +57,17 @@ class ShaderWindow(pyglet.window.Window):
         win32gui.EnumWindows(_enum_windows, 0)  # sets window behind icons
 
     def _update_shader_time(self, dt):
-        if 'time' in self.shader_program.uniforms:
-            self.shader_program.uniforms.time += dt * self.timescale
+        # if 'time' in self.shader_program.uniforms:
+        self.shader_program.uniforms.time += dt * self.timescale
 
         # mouse
-        if 'mouse' in self.shader_program.uniforms:
-            pos = win32api.GetCursorPos()
+        if self.update_mouse_pos:
+            if 'mouse' in self.shader_program.uniforms:
+                pos = win32api.GetCursorPos()
 
-            nx = (pos[0]) / (self.width)
-            ny = (self.height - pos[1]) / (self.height)
-            self.shader_program.uniforms.mouse = (nx, ny)
+                nx = (pos[0]) / (self.width)
+                ny = (self.height - pos[1]) / (self.height)
+                self.shader_program.uniforms.mouse = (nx, ny)
 
     def change_update_rate(self, val):
         pyglet.clock.unschedule(self._update_shader_time)
@@ -60,12 +75,16 @@ class ShaderWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self._update_shader_time, 1 / self.update_rate)
 
     def change_shader(self, shader_file):
-        vert = './shader/vert.glsl'
+        sf = open(shader_file)
+        sf_json = json.loads(sf.read())
+        frag_shader = sf_json['code']
+
 
         self.shader_program.use()
         self.shader_program.clear()
         del self.shader_program
-        self.shader_program = pyshaders.from_files_names(vert, shader_file)
+        # self.shader_program = pyshaders.from_files_names(vert, shader_file)
+        self.shader_program = pyshaders.from_string(vert_shader, frag_shader)
         self.shader_program.use()
 
         self.change_res(self.width, self.height)
