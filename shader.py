@@ -35,6 +35,9 @@ class ShaderWindow(pyglet.window.Window):
         self.timescale = 1
         self.update_rate = 120
 
+        self.backbuffer = None
+        self.texture = pyglet.image.Texture.create(self.width, self.height, gl.GL_RGBA)
+
         pyglet.clock.schedule_interval(self._update_shader_time,
                                        1 / self.update_rate)
 
@@ -56,9 +59,20 @@ class ShaderWindow(pyglet.window.Window):
 
         win32gui.EnumWindows(_enum_windows, 0)  # sets window behind icons
 
+        self.set_location(0, 0)
+
     def _update_shader_time(self, dt):
-        # if 'time' in self.shader_program.uniforms:
-        self.shader_program.uniforms.time += dt * self.timescale
+        if 'time' in self.shader_program.uniforms:
+            self.shader_program.uniforms.time += dt * self.timescale
+        '''
+        if 'backbuffer' in self.shader_program.uniforms:
+            print(self.shader_program.uniforms.backbuffer)
+            # fbo = gl.glGenFramebuffers(1)
+            # glBindTexture(self.texture.target, self.texture.id)
+            buffer = pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
+            print(buffer, buffer.target, buffer.tex_coords)
+            self.shader_program.uniforms.backbuffer = buffer
+        '''
 
         # mouse
         if self.update_mouse_pos:
@@ -81,21 +95,41 @@ class ShaderWindow(pyglet.window.Window):
 
 
         self.shader_program.use()
-        self.shader_program.clear()
-        del self.shader_program
+        # self.shader_program.clear()
+        # del self.shader_program
         # self.shader_program = pyshaders.from_files_names(vert, shader_file)
-        self.shader_program = pyshaders.from_string(vert_shader, frag_shader)
-        self.shader_program.use()
+        try:
+            self.shader_program = pyshaders.from_string(vert_shader, frag_shader)
+            self.shader_program.use()
+        except pyshaders.ShaderCompilationError:
+            print(f"error compiling shader {shader_file}")
+            return False
 
         self.change_res(self.width, self.height)
+        return True
 
     def change_res(self, w, h):
         if 'resolution' in self.shader_program.uniforms:
             self.shader_program.uniforms.resolution = (w, h)
 
+    def copyFramebuffer(self, tex, *size):
+        # if we are given a new size
+        if len(size) == 2:
+            # resize the texture to match
+            tex.width, tex.height = size[0], size[1]
+
+        # bind the texture
+        gl.glBindTexture(tex.target, tex.id)
+        # copy the framebuffer
+        gl.glCopyTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, 0, 0, tex.width, tex.height, 0)
+        # unbind the texture
+        gl.glBindTexture(tex.target, 0)
+
     def on_draw(self):
-        # gl.glEnable(gl.GL_DEPTH_TEST)
-        # gl.glEnable(gl.GL_BLEND)
+
+
+        gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glEnable(gl.GL_BLEND)
         gl.glClearColor(0, 0, 0, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         # vertex_list.draw(vert_mode)
@@ -104,6 +138,8 @@ class ShaderWindow(pyglet.window.Window):
         self.polys.draw(GL_TRIANGLES)
 
     def on_resize(self, width, height):
+        self.copyFramebuffer(self.texture, width, height)
+
         if 'resolution' in self.shader_program.uniforms:
             self.change_res(width, height)
 

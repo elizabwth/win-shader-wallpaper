@@ -31,12 +31,13 @@ class MyWindow(QtWidgets.QMainWindow):
         self.forceButton.clicked.connect(self.force_clicked)
 
         # style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
-        self.sw = shader.ShaderWindow(width=300, height=1080, resizable=True)
-        self.sw.set_location(0, 0)
+        self.sw = shader.ShaderWindow(width=960, height=540, resizable=True)
         self.timer = QTimer()
         self.timer.timeout.connect(self.pyglet_loop)
         self.timer.start(0)
 
+        self.resWidth.setText(str(self.sw.screen.width))
+        self.resHeight.setText(str(self.sw.screen.height))
         # self.show()
 
     def update_mouse_input(self, state):
@@ -63,8 +64,14 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def change_shader(self, index):
         shader = self.list_of_shaders[index]
-        self.sw.change_shader(shader)
+        result = self.sw.change_shader(shader)
         self.currentShaderLabel.setText(shader.split('\\')[-1])
+        if result:
+            self.currentShaderLabel.setStyleSheet("QLabel { color : green; }")
+            self.statusbar.showMessage('compiled successfully')
+        if not result:
+            self.currentShaderLabel.setStyleSheet("QLabel { color : red; }")
+            self.statusbar.showMessage('error compiling shader')
         print(index)
 
     def pyglet_loop(self):
