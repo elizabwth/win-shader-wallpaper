@@ -1,7 +1,7 @@
 import sys
 import glob
-from PyQt5 import QtWidgets, QtGui, uic
-from PyQt5.QtCore import QTimer
+from PyQt5 import QtWidgets, QtGui, QtCore, uic
+from PyQt5.QtCore import QTimer, Qt
 import qtmodern.styles
 import qtmodern.windows
 
@@ -10,15 +10,76 @@ import pyglet
 import shader
 
 
+class ShaderGalleryItem(QtWidgets.QToolButton):
+    shader_id = None
+    sw = None
+
+    def mousePressEvent(self, event):
+        print(self.shader_id)
+       # if event.button() == Qt.LeftButton:
+        print(self.sw)
+        if self.sw:
+            self.sw.change_shader(f'.\\glslsandbox_dump\\source\\{self.shader_id}.glsl')
+            print('changing shader to', self.shader_id)
+        # QtWidgets.QToolButton.mousePressEvent(self, event)
+        # return
+
+
+class IndicSelectWindow(QtWidgets.QDialog):
+    def __init__(self, parent=None, shader_window=None):
+        super(IndicSelectWindow, self).__init__(parent=parent)
+        self.resize(750, 400)
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.scrollArea = QtWidgets.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.layout.addWidget(self.scrollArea)
+
+        dump_dir = '.\\glslsandbox_dump\\'
+        self.list_of_shaders = glob.glob(f'{dump_dir}source\\*.glsl')
+
+        css = "ShaderGalleryItem:hover {" \
+              "border:1px solid palette(highlight);" \
+              "border-radius:4px;" \
+              "/*background:palette(highlight);*/" \
+              " }" \
+              "ShaderGalleryItem {" \
+              "/*background-color:transparent;*/" \
+              " }"
+        # self.setAutoFillBackground(True)
+        self.setStyleSheet(css)
+
+        row = 0
+        for i, s in enumerate(self.list_of_shaders):
+            shader_id = s.split('\\')[-1].split('.')[0]
+            print(f'{dump_dir}thumbs\\{shader_id}.png')
+            button = ShaderGalleryItem()
+            button.sw = shader_window
+            button.shader_id = shader_id
+            button.setFixedSize(204, 104)
+            button.setIcon(QtGui.QIcon(f'{dump_dir}thumbs\\{shader_id}.png'))
+            button.setIconSize(QtCore.QSize(200, 100))
+            # button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            # button.setText(sid)
+
+            # print(s)
+            if i % 3 == 0:
+                row += 1
+            self.gridLayout.addWidget(button, row, i % 3)
+
+
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
         uic.loadUi('main.ui', self)
 
-        self.list_of_shaders = glob.glob('.\\shader\\glslsandbox\\*.glsl')
+        dump_dir = '.\\glslsandbox_dump\\'
+        self.list_of_shaders = glob.glob(f'{dump_dir}source\\*.glsl')
 
-        self.shaderComboBox.addItems([s.split('\\')[-1] for s in self.list_of_shaders])
-        self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
+        # self.shaderComboBox.addItems([s.split('\\')[-1] for s in self.list_of_shaders])
+        # self.shaderComboBox.currentIndexChanged.connect(self.change_shader)
         self.timescaleSlider.valueChanged.connect(self.update_timescale)
         self.updateRateSlider.valueChanged.connect(self.update_update_rate)
         self.setResButton.clicked.connect(self.update_resolution)
@@ -38,7 +99,44 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.resWidth.setText(str(self.sw.screen.width))
         self.resHeight.setText(str(self.sw.screen.height))
+
+        # self.gallery_window = qtmodern.windows.ModernWindow(IndicSelectWindow(parent=self, shader_window=self.sw))
+
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+
+
+        self.scrollArea = QtWidgets.QScrollArea(self)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.scrollArea.setWidgetResizable(True)
+        # self.galleryContainerLayout = QtWidgets.QHBoxLayout(self)
+        self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.galleryContainerLayout.addWidget(self.scrollArea)
+
+        w = 100
+        h = 50
+        row = 0
+        for i, s in enumerate(self.list_of_shaders):
+            shader_id = s.split('\\')[-1].split('.')[0]
+            print(f'{dump_dir}thumbs\\{shader_id}.png')
+            button = ShaderGalleryItem()
+            button.sw = self.sw
+            button.shader_id = shader_id
+            button.setFixedSize(w + 4, h + 4)
+            button.setIcon(QtGui.QIcon(f'{dump_dir}thumbs\\{shader_id}.png'))
+            button.setIconSize(QtCore.QSize(w, h))
+            # button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            # button.setText(sid)
+
+            # print(s)
+            if i % 3 == 0:
+                row += 1
+            self.gridLayout.addWidget(button, row, i % 3)
+
+        self.scrollAreaWidgetContents.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         # self.show()
+
+    def show_gallery(self):
+        self.gallery_window.show()
 
     def update_mouse_input(self, state):
         print(state)
@@ -72,6 +170,7 @@ class MyWindow(QtWidgets.QMainWindow):
         if not result:
             self.currentShaderLabel.setStyleSheet("QLabel { color : red; }")
             self.statusbar.showMessage('error compiling shader')
+            self.sw.change_shader('.\\shader\\glslsandbox\\ShaderError.glsl')
         print(index)
 
     def pyglet_loop(self):
@@ -88,6 +187,7 @@ if __name__ == '__main__':
     # "modern" style
     qtmodern.styles.dark(app)
     mw = qtmodern.windows.ModernWindow(window)
+    # window.gallery_window.show()
     mw.show()
 
     # window.show()

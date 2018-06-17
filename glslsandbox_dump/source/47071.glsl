@@ -1,0 +1,1 @@
+{"code": "#ifdef GL_ES\nprecision mediump float;\n#endif\n\nuniform float time;\n\nvoid main(void) {\n    float t = 9. + mod(time, 9999.);\n    float s = floor(t);\n    vec2  a = mod(gl_FragCoord.xy, s * 2.) - s;\n    float c = sign(a.x * a.y);\n    gl_FragColor = vec4(0., c, 0., 1.);\n}", "user": "84f32e3", "parent": "/e#46787.0", "id": 47071}

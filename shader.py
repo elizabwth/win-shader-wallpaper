@@ -37,9 +37,29 @@ class ShaderWindow(pyglet.window.Window):
 
         self.backbuffer = None
         self.texture = pyglet.image.Texture.create(self.width, self.height, gl.GL_RGBA)
+        gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glEnable(gl.GL_BLEND)
 
         pyglet.clock.schedule_interval(self._update_shader_time,
                                        1 / self.update_rate)
+
+    def on_draw(self):
+        gl.glClearColor(0, 0, 0, 1)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+        # vertex_list.draw(vert_mode)
+
+        # window.clear()
+        self.polys.draw(GL_TRIANGLES)
+
+    def on_resize(self, width, height):
+        self.copyFramebuffer(self.texture, width, height)
+
+        if 'resolution' in self.shader_program.uniforms:
+            self.change_res(width, height)
+
+        super(ShaderWindow, self).on_resize(width, height)
+
+        print(width, height)
 
     def set_behind_icons(self):
         progman = win32gui.FindWindow("Progman", None)
@@ -125,27 +145,6 @@ class ShaderWindow(pyglet.window.Window):
         # unbind the texture
         gl.glBindTexture(tex.target, 0)
 
-    def on_draw(self):
-
-
-        gl.glEnable(gl.GL_DEPTH_TEST)
-        gl.glEnable(gl.GL_BLEND)
-        gl.glClearColor(0, 0, 0, 1)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-        # vertex_list.draw(vert_mode)
-
-        # window.clear()
-        self.polys.draw(GL_TRIANGLES)
-
-    def on_resize(self, width, height):
-        self.copyFramebuffer(self.texture, width, height)
-
-        if 'resolution' in self.shader_program.uniforms:
-            self.change_res(width, height)
-
-        super(ShaderWindow, self).on_resize(width, height)
-
-        print(width, height)
 
 
 

@@ -1,0 +1,1 @@
+{"code": "#ifdef GL_ES\nprecision mediump float;\n#endif\n\n#extension GL_OES_standard_derivatives : enable\n\nuniform float time;\nuniform vec2 mouse;\nuniform vec2 resolution;\nfloat i;\n\nvoid main( void ) {\n\ti++;\n\tgl_FragColor = vec4(sin(time) * sin(i));\n\n}", "user": "a98b191", "parent": null, "id": 46972}
