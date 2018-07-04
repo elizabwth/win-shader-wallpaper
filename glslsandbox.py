@@ -60,15 +60,12 @@ def save_from_list():
 
     print(shader_list)
 
-if __name__ == '__main__':
-    # save_from_list(shader_list)
-
+def _dump_from_glslsandbox():
     dump_dir = '.\\glslsandbox_dump\\'
-    # last run end 47121
-    start_id = 47520-400
-    for i in range(200):
+    # last run end 47520-400
+    start_id = 45000 - 50
+    for i in range(50):
         shader_id = start_id - i
-
 
         # download images
         url = f"http://glslsandbox.com/thumbs/{shader_id}.png"
@@ -77,7 +74,6 @@ if __name__ == '__main__':
         with open(f'{dump_dir}thumbs\\{shader_id}.png', 'wb') as handler:
             handler.write(img_data)
             print("done")
-
 
         # shader source json
 
@@ -96,3 +92,26 @@ if __name__ == '__main__':
             f.write(json.dumps(shader_json))
             print("done")
 
+def _rename_images():
+    shader_list_file = open('shader.list')
+    for line in shader_list_file:
+        if line == '':
+            continue
+        if line.startswith('#'):
+            continue
+
+        item = line.split(' ')
+        shader_id, shader_title = item[0], item[-1].rstrip()
+        shader_id = shader_id.split('.')[0]
+
+        with open(f'.\\shader\\dump\\thumbs\\{shader_id}.png', 'rb') as orig:
+            with open(f'.\\shader\\dump\\thumbs\\{shader_title}.png', 'wb') as handler:
+                handler.write(orig.read())
+                print(f"renaming {shader_id} to {shader_title}.png", )
+            print("done")
+
+
+if __name__ == '__main__':
+    # save_from_list(shader_list)
+    #_dump_from_glslsandbox()
+    _rename_images()
