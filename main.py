@@ -10,6 +10,17 @@ import pyglet
 import shader
 
 
+def catch_exceptions(t, val, tb):
+    QtWidgets.QMessageBox.critical(None,
+                                   "An exception was raised",
+                                   "Exception type: {}\n{}".format(t, val))
+    old_hook(t, val, tb)
+
+
+old_hook = sys.excepthook
+sys.excepthook = catch_exceptions
+
+
 class ShaderGalleryItem(QtWidgets.QToolButton):
     shader_id = None
     sw = None
@@ -17,65 +28,32 @@ class ShaderGalleryItem(QtWidgets.QToolButton):
     def mousePressEvent(self, event):
         print(self.shader_id)
        # if event.button() == Qt.LeftButton:
-        print(self.sw)
         if self.sw:
-            self.sw.change_shader(f'.\\glslsandbox_dump\\source\\{self.shader_id}.glsl')
+            self.sw.change_shader(f'.\\shader\dump\\source\\{self.shader_id}.glsl')
             print('changing shader to', self.shader_id)
         # QtWidgets.QToolButton.mousePressEvent(self, event)
         # return
-
-
-class IndicSelectWindow(QtWidgets.QDialog):
-    def __init__(self, parent=None, shader_window=None):
-        super(IndicSelectWindow, self).__init__(parent=parent)
-        self.resize(750, 400)
-        self.layout = QtWidgets.QHBoxLayout(self)
-        self.scrollArea = QtWidgets.QScrollArea(self)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.layout.addWidget(self.scrollArea)
-
-        dump_dir = '.\\glslsandbox_dump\\'
-        self.list_of_shaders = glob.glob(f'{dump_dir}source\\*.glsl')
-
-        css = "ShaderGalleryItem:hover {" \
-              "border:1px solid palette(highlight);" \
-              "border-radius:4px;" \
-              "/*background:palette(highlight);*/" \
-              " }" \
-              "ShaderGalleryItem {" \
-              "/*background-color:transparent;*/" \
-              " }"
-        # self.setAutoFillBackground(True)
-        self.setStyleSheet(css)
-
-        row = 0
-        for i, s in enumerate(self.list_of_shaders):
-            shader_id = s.split('\\')[-1].split('.')[0]
-            print(f'{dump_dir}thumbs\\{shader_id}.png')
-            button = ShaderGalleryItem()
-            button.sw = shader_window
-            button.shader_id = shader_id
-            button.setFixedSize(204, 104)
-            button.setIcon(QtGui.QIcon(f'{dump_dir}thumbs\\{shader_id}.png'))
-            button.setIconSize(QtCore.QSize(200, 100))
-            # button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            # button.setText(sid)
-
-            # print(s)
-            if i % 3 == 0:
-                row += 1
-            self.gridLayout.addWidget(button, row, i % 3)
 
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
         uic.loadUi('main.ui', self)
+        css = '''
+            ShaderGalleryItem:hover {
+                border:1px solid palette(highlight);
+                border-radius:0px;
+                /*background:palette(highlight);*/
+            }
+            ShaderGalleryItem {
+                border-radius:0px;
+                /*background-color:transparent;*/
+            }
+        '''
+        # self.setAutoFillBackground(True)
+        self.setStyleSheet(css)
 
-        dump_dir = '.\\glslsandbox_dump\\'
+        dump_dir = '.\\shader\dump\\'
         self.list_of_shaders = glob.glob(f'{dump_dir}source\\*.glsl')
 
         # self.shaderComboBox.addItems([s.split('\\')[-1] for s in self.list_of_shaders])
@@ -92,7 +70,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.forceButton.clicked.connect(self.force_clicked)
 
         # style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
-        self.sw = shader.ShaderWindow(width=960, height=540, resizable=True)
+        self.sw = shader.ShaderWindow(width=960, height=540, config=shader.config, resizable=True)
         self.timer = QTimer()
         self.timer.timeout.connect(self.pyglet_loop)
         self.timer.start(0)
@@ -125,7 +103,7 @@ class MyWindow(QtWidgets.QMainWindow):
             button.setIcon(QtGui.QIcon(f'{dump_dir}thumbs\\{shader_id}.png'))
             button.setIconSize(QtCore.QSize(w, h))
             # button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            # button.setText(sid)
+            # button.setText(shader_id)
 
             # print(s)
             if i % 3 == 0:
@@ -146,7 +124,9 @@ class MyWindow(QtWidgets.QMainWindow):
             self.sw.update_mouse_pos = True
 
     def update_resolution(self):
-        self.sw.set_size(int(self.resWidth.text()), int(self.resHeight.text()))
+        w, h = int(self.resWidth.text()), int(self.resHeight.text())
+        self.sw.set_minimum_size(w, h)
+        self.sw.set_size(w, h)
 
     def force_clicked(self):
         self.sw.set_behind_icons()

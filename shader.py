@@ -3,6 +3,12 @@ import pyshaders
 import win32gui
 import win32api
 from pyglet.gl import *
+from pyglet import gl
+# Create template config
+config = gl.Config()
+config.stencil_size = 8
+config.aux_buffers = 4
+config.double_buffer = True
 
 import json
 
@@ -97,10 +103,13 @@ class ShaderWindow(pyglet.window.Window):
         # mouse
         if self.update_mouse_pos:
             if 'mouse' in self.shader_program.uniforms:
-                pos = win32api.GetCursorPos()
+                win_x, win_y = self.get_location()
+                mx, my = win32api.GetCursorPos()
+                mx -= win_x
+                my -= win_y
 
-                nx = (pos[0]) / (self.width)
-                ny = (self.height - pos[1]) / (self.height)
+                nx = (mx) / (self.width)
+                ny = (self.height - my) / (self.height)
                 self.shader_program.uniforms.mouse = (nx, ny)
 
     def change_update_rate(self, val):
