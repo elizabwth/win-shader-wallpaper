@@ -1,6 +1,7 @@
 # win-shader-wallpaper
 
 shaders for your papers
+demo video: https://youtu.be/-hDqOsvj0g0
 
 ![demo gif 1](https://raw.githubusercontent.com/Elizabwth/win-shader-wallpaper/master/snail.gif)
 
