@@ -1,1 +1,0 @@
-{"code": "precision highp float;\nuniform vec2 resolution;\nvoid main(void) {\n\tfloat y = ( gl_FragCoord.y / resolution.y ) * 26.0;\n\tfloat x = ( gl_FragCoord.x / resolution.x ); \n\tfloat b = fract( pow( 2.0, floor(y) ) + x );\n\tif(fract(y) >= 0.9) {\n\t\tb = 0.0;\n\t}\n\tgl_FragColor = vec4(b, b, b, 1.0 );\n}", "user": "cdcf6f1", "parent": null, "id": "46013.0"}

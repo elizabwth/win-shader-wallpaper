@@ -1,0 +1,98 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://main.gd" type="Script" id=1]
+[ext_resource path="res://client.gd" type="Script" id=2]
+
+[node name="server" type="Node"]
+script = ExtResource( 2 )
+
+[node name="Control" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1.05946
+margin_top = -1.05948
+margin_right = -1.05945
+margin_bottom = -1.05948
+custom_constants/margin_right = 20
+custom_constants/margin_top = 20
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 20
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel/MarginContainer"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 340.0
+margin_bottom = 460.0
+
+[node name="GridContainer" type="GridContainer" parent="Control/Panel/MarginContainer/VBoxContainer"]
+margin_right = 320.0
+margin_bottom = 41.0
+custom_constants/vseparation = 5
+custom_constants/hseparation = 20
+columns = 2
+
+[node name="Label" type="Label" parent="Control/Panel/MarginContainer/VBoxContainer/GridContainer"]
+margin_top = 3.0
+margin_right = 102.0
+margin_bottom = 17.0
+text = "Select Shader    "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="shader_select" type="OptionButton" parent="Control/Panel/MarginContainer/VBoxContainer/GridContainer"]
+margin_left = 122.0
+margin_right = 320.0
+margin_bottom = 20.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="timescale_label" type="Label" parent="Control/Panel/MarginContainer/VBoxContainer/GridContainer"]
+margin_top = 26.0
+margin_right = 102.0
+margin_bottom = 40.0
+rect_clip_content = true
+text = "Timescale "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="timescale_slider" type="HSlider" parent="Control/Panel/MarginContainer/VBoxContainer/GridContainer"]
+margin_left = 122.0
+margin_top = 25.0
+margin_right = 320.0
+margin_bottom = 41.0
+size_flags_horizontal = 3
+min_value = -1.0
+max_value = 5.0
+step = 0.01
+value = 1.0
+
+[node name="close" type="Button" parent="Control/Panel/MarginContainer/VBoxContainer"]
+margin_top = 45.0
+margin_right = 320.0
+margin_bottom = 65.0
+text = "Close"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="item_selected" from="Control/Panel/MarginContainer/VBoxContainer/GridContainer/shader_select" to="." method="_on_shader_select_item_selected"]
+[connection signal="value_changed" from="Control/Panel/MarginContainer/VBoxContainer/GridContainer/timescale_slider" to="." method="_on_timescale_slider_value_changed"]
+[connection signal="pressed" from="Control/Panel/MarginContainer/VBoxContainer/close" to="." method="_on_close_pressed"]
