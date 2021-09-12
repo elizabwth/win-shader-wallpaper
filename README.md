@@ -1,9 +1,6 @@
 # future plans:
 ---------------
-- [ ] add frame buffer
-- [ ] add ability to browse all shaders from http://glslsandbox.com/
-- [ ] add configurable color tint for every shader
-- [ ] add sound buffer(?) like https://www.vertexshaderart.com/
+- [] Port to Godot (https://github.com/elizabwth/win-shader-wallpaper/tree/godot)
 
 # win-shader-wallpaper
 
