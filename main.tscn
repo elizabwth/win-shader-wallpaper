@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://shaders/starfield-1.gdshader" type="Shader" id=1]
+[ext_resource path="res://scripts/SetBehindIcons.py" type="Script" id=2]
+[ext_resource path="res://shader-panel.gd" type="Script" id=3]
+[ext_resource path="res://smell.png" type="Texture" id=4]
+[ext_resource path="res://server.gd" type="Script" id=5]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 1 )
+shader_param/mouse = null
+shader_param/time = null
+shader_param/speed2 = 0.2
+
+[node name="server" type="Node"]
+script = ExtResource( 5 )
+
+[node name="main" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="main"]
+visible = false
+margin_right = 1024.0
+margin_bottom = 600.0
+texture = ExtResource( 4 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="margin" type="MarginContainer" parent="main"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="shader" type="Panel" parent="main/margin"]
+material = SubResource( 1 )
+margin_right = 1024.0
+margin_bottom = 600.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="set_behind_icons" type="Node" parent="main/margin/shader"]
+script = ExtResource( 2 )

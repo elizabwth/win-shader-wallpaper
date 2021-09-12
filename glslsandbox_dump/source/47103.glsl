@@ -1,1 +1,0 @@
-{"code": "precision mediump float;\nuniform float time;\nuniform vec2 resolution;\n\nvoid main(void) {\n\tconst float m=1000.0;\n\tfloat x=gl_FragCoord.y*50.0+mod(time*5000.0,m);\n\tfloat g=clamp(mod(x,m)-m/2.0,0.0,1.0)-0.5;\t\n\tgl_FragColor=vec4(vec3(0.0,g,g),1.0);\n}", "user": "3a41b3c", "parent": null, "id": 47103}
