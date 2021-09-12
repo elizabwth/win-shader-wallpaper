@@ -1,5 +1,4 @@
 # future plans:
----------------
 - port to Godot (WIP https://github.com/elizabwth/win-shader-wallpaper/tree/godot)
 - allow some shaders to react to music
 - performance optimizations
